@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+
 from noctua.api.health import router as health_router
 
 app = FastAPI(

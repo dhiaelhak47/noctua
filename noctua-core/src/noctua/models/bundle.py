@@ -4,12 +4,12 @@ import hashlib
 import json
 import uuid
 from datetime import UTC, datetime
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
 
-class EvidenceKind(str, Enum):
+class EvidenceKind(StrEnum):
     POD_STATUS = "pod_status"
     EVENT = "event"
     LOG = "log"
