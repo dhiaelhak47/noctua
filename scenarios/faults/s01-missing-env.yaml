@@ -1,0 +1,42 @@
+# S01 — CrashLoopBackOff with missing env var
+# Overrides ledger-api to crash immediately with a Python-style KeyError traceback.
+# busybox is used because podinfo's minimal image has no shell.
+replicaCount: 1
+
+image:
+  repository: busybox
+  tag: "1.37.0"
+  pullPolicy: IfNotPresent
+
+command:
+  - sh
+  - -c
+
+args:
+  - |-
+    echo "Starting ledger-api v1.2.3..."
+    sleep 2
+    echo "Traceback (most recent call last):"
+    echo "  File \"/app/main.py\", line 12, in <module>"
+    echo "    db_url = os.environ[\"DATABASE_URL\"]"
+    echo "KeyError: 'DATABASE_URL'"
+    exit 1
+
+# Disable probes — container exits before they fire anyway
+livenessProbe:
+  exec:
+    command: ["true"]
+  initialDelaySeconds: 999
+  periodSeconds: 999
+
+readinessProbe:
+  exec:
+    command: ["true"]
+  initialDelaySeconds: 999
+  periodSeconds: 999
+
+hpa:
+  enabled: false
+
+serviceMonitor:
+  enabled: false

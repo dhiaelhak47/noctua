@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ── Usage ─────────────────────────────────────────────────────────────────────
 usage() {
-  echo "Usage: investigate.sh [-n namespace] [-o report.md] [--json] <namespace/pod | pod>"
+  echo "Usage: investigate.sh [-n namespace] [-o report.md] [--json] [--analyst rules|llm|hybrid] <namespace/pod | pod>"
   exit 1
 }
 
@@ -13,12 +13,14 @@ namespace="default"
 pod=""
 output=""
 json_out=false
+analyst="${NOCTUA_ANALYST:-rules}"
 
 while [[ $# -gt 0 ]]; do
   case $1 in
     -n|--namespace) namespace="$2"; shift 2 ;;
     -o|--output)    output="$2";    shift 2 ;;
     --json)         json_out=true;  shift   ;;
+    --analyst)      analyst="$2";   shift 2 ;;
     -*)             usage ;;
     *)
       if [[ "$1" == */* ]]; then
@@ -98,7 +100,8 @@ bundle=$(jq -n \
   }')
 
 # ── Analyse ───────────────────────────────────────────────────────────────────
-hypotheses=$(echo "$bundle" | "$SCRIPT_DIR/analyst/rules.sh")
+echo "Analyst: ${analyst}" >&2
+hypotheses=$(echo "$bundle" | "$SCRIPT_DIR/analyst/analyst.sh" --mode "$analyst")
 bundle=$(echo "$bundle" | jq --argjson h "$hypotheses" '.hypotheses = $h')
 
 # ── Report ────────────────────────────────────────────────────────────────────

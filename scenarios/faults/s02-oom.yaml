@@ -1,0 +1,15 @@
+# S02 — OOMKilled
+# Sets memory limit to 4Mi; podinfo (~15MB RSS) OOM-kills immediately.
+# After a few restarts the pod enters CrashLoopBackOff with OOMKilled in lastState.
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 4Mi
+  limits:
+    cpu: 200m
+    memory: 4Mi   # 4Mi < podinfo's minimum working set → guaranteed OOMKill
+
+hpa:
+  enabled: false

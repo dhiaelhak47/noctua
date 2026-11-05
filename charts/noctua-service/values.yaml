@@ -54,6 +54,11 @@ env: {}
 #  DB_POOL_SIZE: "10"
 #  FAULT_MODE: ""
 
+# Override container entrypoint — leave empty to use the image default.
+# Used by fault-injection scenarios (see scenarios/faults/).
+command: []
+args: []
+
 # HTTPRoute for Envoy Gateway (Phase 1+)
 httpRoute:
   enabled: false

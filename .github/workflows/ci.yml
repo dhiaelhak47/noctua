@@ -24,13 +24,19 @@ jobs:
         run: |
           chmod +x noctua/noctua noctua/investigate.sh noctua/seal.sh \
                    noctua/report.sh noctua/redact.sh \
-                   noctua/collectors/*.sh noctua/analyst/rules.sh
+                   noctua/collectors/*.sh \
+                   noctua/analyst/rules.sh noctua/analyst/llm.sh noctua/analyst/analyst.sh \
+                   scenarios/s01-inject.sh scenarios/s02-inject.sh \
+                   scenarios/s03-inject.sh scenarios/reset.sh
 
       - name: Lint
         run: |
           shellcheck noctua/noctua noctua/investigate.sh noctua/seal.sh \
                      noctua/report.sh noctua/redact.sh \
-                     noctua/collectors/*.sh noctua/analyst/rules.sh
+                     noctua/collectors/*.sh \
+                     noctua/analyst/rules.sh noctua/analyst/llm.sh noctua/analyst/analyst.sh \
+                     scenarios/s01-inject.sh scenarios/s02-inject.sh \
+                     scenarios/s03-inject.sh scenarios/reset.sh
 
       - name: Test
         run: bats noctua/tests/
@@ -45,11 +51,20 @@ jobs:
         with:
           version: v3.16.3
 
-      - name: Lint noctua-service chart (all value overrides)
+      - name: Lint noctua-service chart (base values)
         run: |
           helm lint charts/noctua-service -f gitops/estate/atlas-gateway/values.yaml
           helm lint charts/noctua-service -f gitops/estate/ledger-api/values.yaml
           helm lint charts/noctua-service -f gitops/estate/inventory-svc/values.yaml
+
+      - name: Lint noctua-service chart (fault scenario overrides)
+        run: |
+          helm lint charts/noctua-service \
+            -f gitops/estate/ledger-api/values.yaml -f scenarios/faults/s01-missing-env.yaml
+          helm lint charts/noctua-service \
+            -f gitops/estate/ledger-api/values.yaml -f scenarios/faults/s02-oom.yaml
+          helm lint charts/noctua-service \
+            -f gitops/estate/inventory-svc/values.yaml -f scenarios/faults/s03-bad-image.yaml
 
   security-scan:
     runs-on: ubuntu-latest

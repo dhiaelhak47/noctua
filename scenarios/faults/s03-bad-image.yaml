@@ -1,0 +1,12 @@
+# S03 — ImagePullBackOff
+# Points inventory-svc at a tag that does not exist in the registry.
+# The pod immediately enters ErrImagePull → ImagePullBackOff.
+replicaCount: 1
+
+image:
+  repository: ghcr.io/stefanprodan/podinfo
+  tag: "9.9.9-does-not-exist"
+  pullPolicy: Always   # Always re-pull so ImagePullBackOff fires even if cached
+
+hpa:
+  enabled: false
