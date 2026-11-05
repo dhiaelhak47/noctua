@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+case "${1:-help}" in
+  investigate) shift; exec "$SCRIPT_DIR/investigate.sh" "$@" ;;
+  version)     echo "noctua 0.1.0" ;;
+  help|--help|-h)
+    echo "noctua — evidence-first incident investigation for Kubernetes"
+    echo ""
+    echo "Commands:"
+    echo "  investigate <namespace/pod>   Collect evidence and generate report"
+    echo "  version                       Print version"
+    echo ""
+    echo "Options (investigate):"
+    echo "  -n, --namespace <ns>          Kubernetes namespace (default: default)"
+    echo "  -o, --output <file>           Write report to file"
+    echo "  --json                        Also write bundle JSON alongside report"
+    ;;
+  *)
+    echo "Unknown command: ${1}. Run 'noctua help' for usage." >&2
+    exit 1
+    ;;
+esac

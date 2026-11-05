@@ -9,22 +9,28 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: noctua-core
 
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
       - name: Install dependencies
-        run: pip install -e ".[dev]"
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y jq shellcheck
+          git clone --depth 1 https://github.com/bats-core/bats-core.git /tmp/bats-core
+          sudo /tmp/bats-core/install.sh /usr/local
+
+      - name: Make scripts executable
+        run: |
+          chmod +x noctua/noctua noctua/investigate.sh noctua/seal.sh \
+                   noctua/report.sh noctua/redact.sh \
+                   noctua/collectors/*.sh noctua/analyst/rules.sh
 
       - name: Lint
-        run: ruff check . && ruff format --check .
+        run: |
+          shellcheck noctua/noctua noctua/investigate.sh noctua/seal.sh \
+                     noctua/report.sh noctua/redact.sh \
+                     noctua/collectors/*.sh noctua/analyst/rules.sh
 
       - name: Test
-        run: pytest
+        run: bats noctua/tests/

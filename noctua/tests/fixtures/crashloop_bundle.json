@@ -1,0 +1,32 @@
+{
+  "bundle_id": "test-crashloop-001",
+  "schema_version": "0.1",
+  "created_at": "2026-11-05T10:00:00Z",
+  "namespace": "default",
+  "pod": "ledger-api-abc-123",
+  "sha256": "aabbcc",
+  "evidence": [
+    {
+      "id": "E1",
+      "kind": "pod_status",
+      "source": "pod_status",
+      "content": "Pod: default/ledger-api-abc-123\nPhase: Running\nContainer: ledger-api\n  Ready: false\n  RestartCount: 5\n  Image: ghcr.io/example/ledger-api:v1.2.3\n  State: Waiting (CrashLoopBackOff)\n  LastState: Terminated (reason=Error, exitCode=1)",
+      "collected_at": "2026-11-05T10:00:00Z"
+    },
+    {
+      "id": "E2",
+      "kind": "event",
+      "source": "events",
+      "content": "Last Seen             Type       Reason                    Message\n--------------------------------------------------------------------------------\n2026-11-05T09:55:00   Warning    BackOff                   Back-off restarting failed container ledger-api",
+      "collected_at": "2026-11-05T10:00:00Z"
+    },
+    {
+      "id": "E3",
+      "kind": "log",
+      "source": "previous_container_logs",
+      "content": "2026-11-05T09:54:50Z INFO  Starting ledger-api v1.2.3\nTraceback (most recent call last):\n  File \"/app/main.py\", line 12, in <module>\n    db_url = os.environ[\"DATABASE_URL\"]\nKeyError: 'DATABASE_URL'",
+      "collected_at": "2026-11-05T10:00:00Z"
+    }
+  ],
+  "hypotheses": []
+}

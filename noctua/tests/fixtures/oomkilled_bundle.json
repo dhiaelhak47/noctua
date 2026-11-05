@@ -1,0 +1,32 @@
+{
+  "bundle_id": "test-oomkilled-001",
+  "schema_version": "0.1",
+  "created_at": "2026-11-05T10:00:00Z",
+  "namespace": "default",
+  "pod": "inventory-svc-xyz-456",
+  "sha256": "ddeeff",
+  "evidence": [
+    {
+      "id": "E1",
+      "kind": "pod_status",
+      "source": "pod_status",
+      "content": "Pod: default/inventory-svc-xyz-456\nPhase: Running\nContainer: inventory-svc\n  Ready: false\n  RestartCount: 3\n  Image: ghcr.io/example/inventory-svc:v2.0.1\n  State: Waiting (CrashLoopBackOff)\n  LastState: Terminated (reason=OOMKilled, exitCode=137)",
+      "collected_at": "2026-11-05T10:00:00Z"
+    },
+    {
+      "id": "E2",
+      "kind": "event",
+      "source": "events",
+      "content": "Last Seen             Type       Reason                    Message\n--------------------------------------------------------------------------------\n2026-11-05T09:50:00   Warning    OOMKilling                Memory limit reached",
+      "collected_at": "2026-11-05T10:00:00Z"
+    },
+    {
+      "id": "E3",
+      "kind": "log",
+      "source": "previous_container_logs",
+      "content": "No previous container logs available.",
+      "collected_at": "2026-11-05T10:00:00Z"
+    }
+  ],
+  "hypotheses": []
+}
