@@ -1,0 +1,19 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "noctua-service.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "noctua-service.labels" . | nindent 4 }}
+    # kube-prometheus-stack picks up monitors with this label
+    release: kube-prometheus-stack
+spec:
+  selector:
+    matchLabels:
+      {{- include "noctua-service.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: http
+      path: {{ .Values.serviceMonitor.path }}
+      interval: {{ .Values.serviceMonitor.interval }}
+{{- end }}

@@ -1,0 +1,24 @@
+# Apply this once manually: kubectl apply -f gitops/apps/bootstrap.yaml
+# After this, Argo CD manages itself and all child apps.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bootstrap
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/dhiaelhak47/noctua.git
+    targetRevision: HEAD
+    path: gitops/apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

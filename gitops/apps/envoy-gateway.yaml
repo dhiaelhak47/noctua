@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: envoy-gateway
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://charts.gateway.envoyproxy.io
+    chart: gateway-helm
+    targetRevision: "v1.2.4"
+    helm:
+      valuesObject:
+        deployment:
+          replicas: 1
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: envoy-gateway-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+# GatewayClass + Gateway — applied after envoy-gateway is ready
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: noctua-gateway
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/dhiaelhak47/noctua.git
+    targetRevision: HEAD
+    path: gitops/gateway
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: envoy-gateway-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

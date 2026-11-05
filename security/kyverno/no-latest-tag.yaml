@@ -1,0 +1,32 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-latest-tag
+  annotations:
+    policies.kyverno.io/title: Disallow Latest Tag
+    policies.kyverno.io/description: >-
+      The :latest tag is mutable and makes deployments non-reproducible.
+      Pin every image to a specific digest or semantic version.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: no-latest-tag
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [estate]
+      validate:
+        message: "Image tag ':latest' is not allowed. Use a pinned version or digest."
+        foreach:
+          - list: "request.object.spec.containers"
+            deny:
+              conditions:
+                any:
+                  - key: "{{ element.image }}"
+                    operator: Equals
+                    value: "*:latest"
+                  - key: "{{ element.image }}"
+                    operator: NotContains
+                    value: ":"

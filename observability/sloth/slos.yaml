@@ -1,0 +1,141 @@
+apiVersion: sloth.slok.dev/v1
+kind: PrometheusServiceLevel
+metadata:
+  name: atlas-gateway-slos
+  namespace: monitoring
+spec:
+  service: atlas-gateway
+  labels:
+    team: noctua
+  slos:
+    - name: availability
+      objective: 99.5
+      description: "99.5% of requests to atlas-gateway must succeed (non-5xx)."
+      sli:
+        events:
+          errorQuery: sum(rate(http_requests_total{job="atlas-gateway",code=~"5.."}[{{.window}}]))
+          totalQuery: sum(rate(http_requests_total{job="atlas-gateway"}[{{.window}}]))
+      alerting:
+        name: AtlasGatewayAvailability
+        labels:
+          team: noctua
+        annotations:
+          summary: "atlas-gateway availability SLO breach"
+        pageAlert:
+          labels:
+            severity: critical
+        ticketAlert:
+          labels:
+            severity: warning
+
+    - name: latency-p95
+      objective: 99.5
+      description: "95th-percentile latency for atlas-gateway must stay below 300ms."
+      sli:
+        events:
+          errorQuery: sum(rate(http_request_duration_seconds_bucket{job="atlas-gateway",le="0.3"}[{{.window}}]))
+          totalQuery: sum(rate(http_request_duration_seconds_count{job="atlas-gateway"}[{{.window}}]))
+      alerting:
+        name: AtlasGatewayLatencyP95
+        labels:
+          team: noctua
+        annotations:
+          summary: "atlas-gateway p95 latency SLO breach"
+        pageAlert:
+          labels:
+            severity: critical
+        ticketAlert:
+          labels:
+            severity: warning
+---
+apiVersion: sloth.slok.dev/v1
+kind: PrometheusServiceLevel
+metadata:
+  name: ledger-api-slos
+  namespace: monitoring
+spec:
+  service: ledger-api
+  labels:
+    team: noctua
+  slos:
+    - name: availability
+      objective: 99.5
+      description: "99.5% of requests to ledger-api must succeed."
+      sli:
+        events:
+          errorQuery: sum(rate(http_requests_total{job="ledger-api",code=~"5.."}[{{.window}}]))
+          totalQuery: sum(rate(http_requests_total{job="ledger-api"}[{{.window}}]))
+      alerting:
+        name: LedgerApiAvailability
+        labels:
+          team: noctua
+        pageAlert:
+          labels:
+            severity: critical
+        ticketAlert:
+          labels:
+            severity: warning
+
+    - name: latency-p95
+      objective: 99.5
+      description: "p95 latency < 300ms for ledger-api."
+      sli:
+        events:
+          errorQuery: sum(rate(http_request_duration_seconds_bucket{job="ledger-api",le="0.3"}[{{.window}}]))
+          totalQuery: sum(rate(http_request_duration_seconds_count{job="ledger-api"}[{{.window}}]))
+      alerting:
+        name: LedgerApiLatencyP95
+        labels:
+          team: noctua
+        pageAlert:
+          labels:
+            severity: critical
+        ticketAlert:
+          labels:
+            severity: warning
+---
+apiVersion: sloth.slok.dev/v1
+kind: PrometheusServiceLevel
+metadata:
+  name: inventory-svc-slos
+  namespace: monitoring
+spec:
+  service: inventory-svc
+  labels:
+    team: noctua
+  slos:
+    - name: availability
+      objective: 99.5
+      description: "99.5% of requests to inventory-svc must succeed."
+      sli:
+        events:
+          errorQuery: sum(rate(http_requests_total{job="inventory-svc",code=~"5.."}[{{.window}}]))
+          totalQuery: sum(rate(http_requests_total{job="inventory-svc"}[{{.window}}]))
+      alerting:
+        name: InventorySvcAvailability
+        labels:
+          team: noctua
+        pageAlert:
+          labels:
+            severity: critical
+        ticketAlert:
+          labels:
+            severity: warning
+
+    - name: latency-p95
+      objective: 99.5
+      description: "p95 latency < 300ms for inventory-svc."
+      sli:
+        events:
+          errorQuery: sum(rate(http_request_duration_seconds_bucket{job="inventory-svc",le="0.3"}[{{.window}}]))
+          totalQuery: sum(rate(http_request_duration_seconds_count{job="inventory-svc"}[{{.window}}]))
+      alerting:
+        name: InventorySvcLatencyP95
+        labels:
+          team: noctua
+        pageAlert:
+          labels:
+            severity: critical
+        ticketAlert:
+          labels:
+            severity: warning

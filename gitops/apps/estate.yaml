@@ -1,0 +1,77 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: atlas-gateway
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/dhiaelhak47/noctua.git
+    targetRevision: HEAD
+    path: charts/noctua-service
+    helm:
+      valueFiles:
+        - ../../../gitops/estate/atlas-gateway/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: estate
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ledger-api
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/dhiaelhak47/noctua.git
+    targetRevision: HEAD
+    path: charts/noctua-service
+    helm:
+      valueFiles:
+        - ../../../gitops/estate/ledger-api/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: estate
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: inventory-svc
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/dhiaelhak47/noctua.git
+    targetRevision: HEAD
+    path: charts/noctua-service
+    helm:
+      valueFiles:
+        - ../../../gitops/estate/inventory-svc/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: estate
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

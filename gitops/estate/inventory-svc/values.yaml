@@ -1,0 +1,32 @@
+fullnameOverride: inventory-svc
+
+replicaCount: 2
+
+image:
+  repository: ghcr.io/stefanprodan/podinfo
+  tag: "6.7.0"
+
+service:
+  port: 9898
+  targetPort: 9898
+
+# S02 scenario: set READY_DELAY=120 to trigger ProgressDeadlineExceeded (Phase 6+)
+env:
+  PODINFO_UI_MESSAGE: "inventory-svc"
+  READY_DELAY: "0"
+
+httpRoute:
+  enabled: true
+  hostnames:
+    - inventory-svc.noctua.local
+  gateway:
+    name: noctua-gateway
+    namespace: envoy-gateway-system
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi

@@ -1,0 +1,31 @@
+fullnameOverride: atlas-gateway
+
+replicaCount: 2
+
+image:
+  repository: ghcr.io/stefanprodan/podinfo
+  tag: "6.7.0"
+
+service:
+  port: 9898
+  targetPort: 9898
+
+env:
+  PODINFO_UI_COLOR: "#0B0D10"
+  PODINFO_UI_MESSAGE: "atlas-gateway"
+
+httpRoute:
+  enabled: true
+  hostnames:
+    - atlas-gateway.noctua.local
+  gateway:
+    name: noctua-gateway
+    namespace: envoy-gateway-system
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
