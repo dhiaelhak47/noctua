@@ -1,0 +1,31 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: noctua-collector
+  labels:
+    app.kubernetes.io/name: noctua
+    app.kubernetes.io/component: collector
+rules:
+  # pod_status.sh: kubectl get pod -o json
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+
+  # logs.sh: kubectl logs --previous
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+
+  # events.sh: kubectl get events --field-selector involvedObject.name=...
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list", "watch"]
+
+  # rollout.sh: kubectl get rs, kubectl get deployment
+  - apiGroups: ["apps"]
+    resources: ["replicasets", "deployments"]
+    verbs: ["get", "list", "watch"]
+
+  # noctua NEVER accesses:
+  #   secrets, configmaps, serviceaccounts, nodes, persistentvolumes
+  #   anything in extensions / networking / rbac / policy groups
